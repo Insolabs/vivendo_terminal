@@ -1,0 +1,137 @@
+#!/bin/bash
+
+# Inicializa extenção que permite exibir notificações na UNITY
+
+eval "export $(egrep -z DBUS_SESSION_BUS_ADDRESS /proc/$(pgrep -u $LOGNAME gnome-session)/environ)";
+
+# Exibe notificação
+
+notify-send Atualização "Suas aplicações começaram a ser atualizadas"
+
+# Cria variáveis de cor
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+BOLD=$(tput bold)
+NORMAL=$(tput sgr0)
+COLS=$(tput cols)
+ROWS=$(tput lines)
+#CLOCKWIDTH=8 #I'm assuming a HH:MM:SS format
+#CENTERCOL=$((COLS/2))
+#CENTERCOL=$((CENTERCOL-CLOCKWIDTH))
+CENTERCOL=20
+#CENTERROW=$((ROWS/2))
+CENTERROW=100
+
+
+# Recebe o caminho das aplicações como parametro,
+# Caso nenhum caminho seja passado
+# Será assumido como path o caminho '/var/www'
+
+PROJECTS=$1;
+
+if [ "$PROJECTS" == "" ]; then
+    PROJECTS="/var/www"
+fi
+
+# Varre todos os repositórios dentro do path de projetos
+# Se este repositório possuir como dependência o repositório da trigg
+# Então ele será atualizado
+for repository in $(find $PROJECTS -maxdepth 1 -type d)
+do
+  if [ -d "$repository/vendor/trigg/sdk" ]; then
+    clear;
+
+    echo '                    ..`````````````.....      `.--------...``           `                          '
+    echo '                    `-`````````````````.`       .--.`....----...`       ``                         '
+    echo '                     ..`````````   ```````       .--.`````...----`       .`                        '
+    echo '                      ..````````     `````        `.-.````````.---`      .-`                       '
+    echo '                       ``````````       ```        `..`````````.--.`     `-.`                      '
+    echo '                          ```````                   `..`````````.--.`     .`.`                     '
+    echo '                            ``````                   `.``````````.--```   .``.`                    '
+    echo '                              `````                    .`````````.--.```  .```.`                   '
+    echo '                                ````                    ``````````.--.``` .```..`                  '
+    echo '                                  ```                    `````````.--.`````````..                  '
+    echo '   ``                               ``                    `````````.--``````````-                  '
+    echo '   `..                                                     ````````.--.`````````.`                 '
+    echo '   ``..`                                                    ````````--.`````````..                 '
+    echo '    ```..`                                                   ```````.--``````````.                 '"${BOLD}"'.:: Atualizando '"$repository"' ::.'"${NORMAL}"''
+    echo '     ```...`                                                 ```````.--``````````.                 '
+    echo '      ```..-`                                                 ```````--.`````````.    ``           '
+    echo '       ````..                                    ````         ```````.-.`````````.   `.`           '
+    echo '        ``````                                .:osyyy+.        ``````.-.`````````.  ``.            '
+    echo '         ``````                            `:oyhdmmmmmd/       ``````.-.`````````.````.            '
+    echo '            ````                         `:ossmmmmmmmmmmy.      ``````-.`..````````````            '
+    echo '              ```                       :osssymmmmmmmmmmmd-     ``````..`/m/`````````.`            '
+    echo '                 `                    .+ssssshmmmmmmmmmmmmm/     `````..`smN:````````.             '
+    echo '                                     -ssssssshmmmmmmmmmmmmmm+    `````..`dmmm.````````             '
+    echo '                                    :ssssssssdmmmmmmmmmmmmmmmo    `````.-mmmNy``````.`             '
+    echo '                                   :sssssssssdmmmmmmmmmmmmmmmms   ``````+mmmmN-`````.              '
+    echo '                                  -ssssssssssdmmmmmmmmmmmmmmmmms  ``````ymmmmmh``````              '
+    echo '                                  ssssssssssommmmmmmmmmmmmmmmmmms  ````.mmmmmmN-```.               '
+    echo '                                 `sssssssss+smmmmmmmmmmmmmmmmmmmms ````ommmmmmNh```.               '
+    echo '                                  sssssssso/smmmmmmmmmmmmmmmmmmmmmo````dmmmmmmmM-`.                '
+    echo '                                  `+ssssss/symmmmmmmmmmmmmmmmmmmmmm:``/mmmmmmmmNy`.                '
+    echo '                                    .+ssssssymmmmmmmmmmmmmmmmmmmmmmd.`dmmmmmmmmmN.`                '
+    echo '                          +dds-      `/sssssymmmmmmmmmmmmmmmmmmmmmmmh+mmmmmmmmmmN-                 '
+    echo '                         /doosms`  `-+ssssssymmmmmmmmmmmmmNhyhmmmmmmmmmmmmmmmmsoy:                 '
+    echo '                         hoso+/md../ssssso///shmmmmmmmmmmmmNmsodmmmmmmmmmmmms. :s`                 '
+    echo '                        `mshho/+Nd/sssss+/-`  ``-+sdmmmmmmmmNNdydmmmmmmmmms.  :s.                  '
+    echo '                        .mmmmhs:hd+osssso:`        `-+ydmmmmmMNmmmmmmmmms. .-md.                   '
+    echo '                        `mmmmh//+o++ssssssss++ys+:`    `:oydmmNmmmmmdmy-`/hdsm.                    '
+    echo '                         ymmmh:/++++ossssssymsdMMMs   .-` ``:oyddhmms: +mMMom-                     '
+    echo '                         .dmhy/::++++sssssssmmyhMMMmhhNNmds+`.../omy--/NMNyd/                      '
+    echo '                          .hmdy+-/+++sssssssdmmhyhhhhhhhhhhoossyhdddsyyyydNy                       '
+    echo '                           `/hmmh++++osssssshmdhhyyyyyhdddhhhdmmmmmmmdhhhdm.                       '
+    echo '                             `:ss+/+++ssssssymmmmmmmmmNNNmmmmmmmmmmhdmmmmMy                        '
+    echo '                                  `/++sssssssdmmmmmmmmmNmmhmmmmmmmmhohmmmN.                        '
+    echo '                                    ./+ssssssydmmmmmmmmmmmddhdmmmhooohmmNs                         '
+    echo '                                      .:+ssssssydmmmmmmmmmmmdhhyyhydmmmmy`                         '
+    echo '                                        `./ossssyhdmmmmmmmmmmddmmmmmmdy:`                          '
+    echo '                                           `./+ossyhdmmmmmmmmmdmmmhs:.                             '
+    echo '                                            `+////ooshdmmmmmmmdho-`                                '
+    echo '                                       ``.:+:ssoo+////+shddhy/.`                                   '
+    echo '                               ````````../syyyyssss++oo+ooss:.                                     '
+    echo '                            `...`......``.-odmdhsssoo+syyhsmmh/`````                               '
+    echo '                        `./oyhhhy/..........-:+yhhhhdhhhyyhdhyho-....`  `                          '
+    echo '                       /hmmmmmmmmmy-...........-/sdmmmmmmmdmymmmh.......:/`                        '
+    echo '                      smmdmmNNmmdhddo.............-:+ssyyyyys/o+/........:s+`                      '
+    echo '                     +mmsdmNNmmmNNNNms..............`````````..............yy`                     '
+    echo '                     hmshmmNmdyNMNmmmmo...................................`-ms                     '
+    echo '                    `sh/mmmmmomNNmmmmmm....................................`hm`                    '
+    echo '                     +s/ydmmmhmmmmmmmmm.....................................om.                    '
+    echo '                    -oo+sshdmmmdddhyyhy`.`.............````````````........`+ss`                   '
+    echo '                    oymddo+oyhhdmmmyo/.`````......```````...................mmo+                   '
+    echo '                    ohmmy+sdmmmNMNmd````````````````.......................-NNm+-                  '
+    echo '                    /ymd/shmmmNMMNms```````````............................/NMNho`                 '
+    echo '                   -+ymoosdmmmNMMNm-`````````..............................sNMNm+/                 '
+    echo '                   +ymm/sshmmmNMNms  `````````............................:mmNNm+-                 '
+    echo '                   /ymmoosshmmmmmy`      ````............```````````......dmmmysy-`                '
+    echo '                   .sdmmosssooss/         ```````````..................``+oooyddyyhs+/.            '
+    echo '                   .ymmmmmmmmhms.            ``.........................`+hdmdshNNNNNNN-/+oss-     '
+    echo '                   symhyyhhhhyyyd+           ``........................../mmshNNNNNdy++hydNNm-     '
+
+
+    (
+      cd "${repository}";
+      git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD` -q;
+      tput cup $CENTERCOL $CENTERROW
+      echo -en "${BOLD}Atualizando commits${NORMAL}   \r";
+      git pull --all --no-edit --quiet;
+      tput cup $CENTERCOL $CENTERROW
+      echo -en "\e ${BOLD}Atualizando tags ${NORMAL}     \r";
+      git pull --tags --quiet;
+      cd vendor/trigg/sdk;
+      git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD` -q;
+      tput cup $CENTERCOL $CENTERROW
+      echo -en "\e ${BOLD}Atualizando commits do SDK ${NORMAL}     \r";
+      git pull --all --no-edit --quiet;
+      tput cup $CENTERCOL $CENTERROW
+      echo -en "\e ${BOLD}Atualizando tags do SDK ${NORMAL}     \r";
+      git pull --tags --quiet
+    )
+  fi
+done
+echo -e "${NORMAL}";
+tput cup 0 0
+notify-send Atualização "Suas aplicações foram atualizadas"
